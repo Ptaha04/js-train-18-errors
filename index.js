@@ -6,10 +6,16 @@
  *  data - вхідні дані.
  */
 function checkData(data) {
-  // Якщо об'єкт не пустий повертаємо дані
-  // Інакше створюємо помилку,в якості тексту помилки ми використовуємо рядок "Об'єкт пустий".
-  // Якщо виникла помилка, повертаємо її повідомлення.
+  if (Object.keys(data).length !== 0) {
+    return data;
+  } else {
+    const newErr = new Error("Об'єкт пустий");
+    return newErr.message;
+  }
 }
+// Якщо об'єкт не пустий повертаємо дані
+// Інакше створюємо помилку,в якості тексту помилки ми використовуємо рядок "Об'єкт пустий".
+// Якщо виникла помилка, повертаємо її повідомлення.
 
 console.log("Завдання: 1 ==============================");
 
@@ -26,6 +32,12 @@ console.log(checkData({ name: "John", age: 30, city: "New York" }));
  *  jsonStr - JSON-рядок для аналізу.
  */
 function parseJson(jsonStr) {
+  try {
+    const obj = JSON.parse(jsonStr);
+    return obj;
+  } catch (err1) {
+    return err1.message;
+  }
   // Спроба розпарсити JSON-рядок.
   // Якщо рядок має невірний формат, виникне помилка, яку ми обробляємо у блоку catch.
   // Повертаємо отриманий об'єкт
@@ -34,7 +46,7 @@ function parseJson(jsonStr) {
 console.log("Завдання: 2 ==============================");
 
 // Вхідний JSON-рядок з правильним форматом.
-let validJson = '{"name":"John","age":30,"city":"New York"}';
+let validJson = '{"name":"John","age":30,"city":"Las Vegas"}';
 // Вхідний JSON-рядок з неправильним форматом.
 let invalidJson = '{"name":"John,"age":30,"city":"New York"}'; // Пропущена закриваюча лапка після "John".
 
@@ -53,6 +65,17 @@ console.log(parseJson(invalidJson));
  *  age - вік користувача.
  */
 function getAge(age) {
+  try {
+    let age = age;
+  } catch (err) {
+    if (age < 1) {
+      let err1 = Error("Вік не може бути менше 0!");
+      err1.name = "AgeError";
+      return { error: err1.message, name: err1.name };
+    } else {
+      return `Вік користувача: ${age}`;
+    }
+  }
   // Спроба отримати вік користувача.
   // Якщо вік менше 0, виникне помилка, яку ми обробляємо у блоку catch.
   // Генеруємо помилку, якщо вік менше 0 з повідомленням Вік не може бути менше 0!.
@@ -79,6 +102,17 @@ console.log(getAge(20));
  *  id - ID книги.
  */
 function getBookById(books, id) {
+  try {
+    let book = books.find((book) => book.id === id);
+
+    if (!book) {
+      throw new TypeError(`Книга з ID ${id} не знайдена!`);
+    }
+    return `Книга: ${book.title}`;
+  } catch (e) {
+    return e.toString();
+  }
+
   // Спроба знайти книгу по ID та записати в змінну book.
   // Якщо книга не знайдена, генерується TypeError з повідомленням Книга з ID ${id} не знайдена!.
   // Повертаємо book
@@ -119,6 +153,15 @@ console.log(
  *  encodedString - Рядок для декодування.
  */
 function decodeURIComponentWrapper(encodedString) {
+  try {
+    return decodeURIComponent(encodedString);
+  } catch (err) {
+    if (err.name === "URIError") {
+      return err;
+    } else {
+      return err.toString();
+    }
+  }
   // Спроба декодувати рядок
   // Повертаємо декодований рядок
   // Якщо виникла помилка, і ії назва дорівнює URIError повертаємо помилку про неправильний URI формат з повідомленням Помилка декодування URI,
@@ -138,8 +181,23 @@ console.log(decodeURIComponentWrapper("%E0%A4%A")); // виведе інформ
  *  numbers - Масив чисел для пошуку.
  */
 function findEvenNumber(numbers) {
+  let evenNumber;
+
+  console.log(numbers);
   // Створюємо змінну evenNumber без значення
   // Шукаємо перше число, що ділиться на 2 без остачі, та записуємо в нашу змінну.
+
+  try {
+    evenNumber = numbers.find((element) => element % 2 === 0);
+
+    if (typeof evenNumber !== "number") {
+      throw "У масиві немає чисел, що діляться на 2 без остачі!";
+    }
+    return evenNumber;
+  } catch (e) {
+    return "У масиві немає чисел, що діляться на 2 без остачі!";
+  }
+
   // Якщо такого числа немає, кидаємо помилку з повідомлення У масиві немає чисел, що діляться на 2 без остачі!.
   // Якщо число знайдено повертаємо його
   // Виводимо текстове представлення помилки.
@@ -165,6 +223,21 @@ console.log(findEvenNumber([1, 4, 5]));
  *  user - Об'єкт користувача для перевірки.
  */
 function validateUser(user) {
+  try {
+    if (Object.keys(user).length < 1) {
+      throw "Об'єкт користувача не вказано!";
+    }
+
+    if (!user.hasOwnProperty("name")) {
+      throw `Ім'я користувача не вказано!`;
+    }
+    if (!user.hasOwnProperty("email")) {
+      throw `Email користувача не вказано!`;
+    }
+    return "Об'єкт користувача відповідає всім вимогам.";
+  } catch (e) {
+    console.error(e, user);
+  }
   // Перевіряємо, чи існує об'єкт користувача,якщо ні викидуємо помилку з повідомленням "Об'єкт користувача не вказано!".
   // Перевіряємо, чи існує ім'я користувача,якщо ні викидуємо помилку з повідомленням "Ім'я користувача не вказано!", а як причину вказуємо об'єкт user.
   // Перевіряємо, чи існує email користувача,якщо ні викидуємо помилку з повідомленням "Email користувача не вказано!", а як причину вказуємо об'єкт user.
@@ -188,6 +261,17 @@ validateUser({ name: "John Doe" });
  *  number - Число для обчислення квадратного кореня.
  */
 function calculateSquareRoot(number) {
+  try {
+    if (typeof number !== "number") {
+      throw "Аргумент має бути числом!";
+    }
+    if (number < 0) {
+      throw "Число не повинно бути від'ємним!";
+    }
+    return Math.sqrt(number);
+  } catch (e) {
+    return e;
+  }
   // Перевіряємо, чи аргумент є числом, якщо ні викидуємо помилку про невірний тип даних з повідомленням Аргумент має бути числом!".
   // Перевіряємо, чи число не від'ємне, якщо ні викидуємо помилку про тип недопустимий діапазон з повідомленням Число не повинно бути від'ємним!".
   // Повертаємо корінь квадратний з вхідного значення
@@ -212,12 +296,23 @@ console.log(calculateSquareRoot("abc"));
  *  data - Масив чисел для обробки.
  */
 function processData(data) {
-  // Для кожного елемента в масиві
-  // Перевіряємо, чи елемент є числом
-  // Якщо елемент не є числом, кидаємо помилку невірного типу даних з повідомленням `Елемент з індексом ${index} має бути числом!`
-  // Повертаємо рядок "Дані успішно оброблені"
-  // Виводимо stack trace помилки
-  // Повертаємо повідомлення помилки
+  try {
+    // Для кожного елемента в масиві
+    data.forEach((element, index) => {
+      if (typeof element !== "number") {
+        throw new Error(`Елемент з індексом ${index} має бути числом!`);
+      }
+    });
+    return "Дані успішно оброблені";
+    // Перевіряємо, чи елемент є числом
+    // Якщо елемент не є числом, кидаємо помилку невірного типу даних з повідомленням `Елемент з індексом ${index} має бути числом!`
+    // Повертаємо рядок "Дані успішно оброблені"
+    // Виводимо stack trace помилки
+    // Повертаємо повідомлення помилки
+  } catch (e) {
+    console.log(e.stack);
+    return e;
+  }
 }
 
 console.log("Завдання: 9 ==============================");
@@ -239,6 +334,11 @@ console.log(processData([1, "two", 3]));
  *  expression - Математичний вираз у вигляді рядка.
  */
 function evaluateExpression(expression) {
+  try {
+    return eval(expression);
+  } catch (e) {
+    return e;
+  }
   // Повертаємо результат розрахунку
   // Якщо була виявлена помилка повертаємо помилку при виконанні функції eval
 }
